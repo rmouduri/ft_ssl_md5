@@ -13,3 +13,9 @@ void print_command_error(const char *command) {
     write(STDERR_FILENO, command, strlen(command));
     write(STDERR_FILENO, FT_SSL_INVALID_COMMAND_2, strlen(FT_SSL_INVALID_COMMAND_2));
 }
+
+void print_malloc_error(const char *function) {
+    write(STDERR_FILENO, "Malloc error in function: ", strlen("Malloc error in function: "));
+    write(STDERR_FILENO, function, strlen(function));
+    write(STDERR_FILENO, "\n", 1);
+}

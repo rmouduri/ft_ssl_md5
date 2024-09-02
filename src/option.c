@@ -26,12 +26,12 @@ bool check_command(const char *command, ssl_t *ssl) {
 bool check_options(int argc, char **argv, ssl_t *ssl) {
     int i = 2;
 
-    /* init ssl->ssl_strs */
+    /* init ssl->ssl_digests */
 
     while (i < argc) {
         if (strcmp(HELP_ARG, argv[i]) == 0) {
             print_help();
-            // free_ssl_strs(ssl->ssl_strs);
+            // free_ssl_inputs(ssl->ssl_digests);
             return false;
         } else if (strcmp(P_OPTION_ARG, argv[i]) == 0) {
             ssl->options |= P_OPTION;
@@ -41,8 +41,8 @@ bool check_options(int argc, char **argv, ssl_t *ssl) {
             ssl->options |= R_OPTION;
         } else if (strcmp(S_OPTION_ARG, argv[i]) == 0) {
             if (i + 1 >= argc) break;
-            if (true/* Add to ssl->ssl_strs */ == false) {
-                // free_ssl_strs(ssl->ssl_strs);
+            if (true/* Add to ssl->ssl_digests */ == false) {
+                // free_ssl_inputs(ssl->ssl_digests);
                 return false;
             }
         } else {
@@ -53,8 +53,8 @@ bool check_options(int argc, char **argv, ssl_t *ssl) {
     }
 
     while (i < argc) {
-        if (true/* Add to ssl->ssl_strs */ == false) {
-            // free_ssl_strs(ssl->ssl_strs);
+        if (true/* Add to ssl->ssl_digests */ == false) {
+            // free_ssl_inputs(ssl->ssl_digests);
             return false;
         }
 

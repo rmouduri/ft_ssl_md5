@@ -10,7 +10,9 @@ OBJS_DIR =	.objs
 
 SRCS_FILE =	main.c \
 			option.c	\
-			error.c
+			error.c	\
+			utils.c	\
+			md5.c
 
 OBJ_FILE =	$(SRCS_FILE:.c=.o)
 
