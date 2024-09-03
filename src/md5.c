@@ -28,32 +28,17 @@ static bool MD5_Padding(const uint8_t *input, const size_t input_len, ft_md5_t *
     return true;
 }
 
-static uint32_t combine(uint32_t state[4], uint32_t input, uint8_t i, uint32_t k, uint32_t rot) {
-    uint32_t ans = 0;
-
-    if (i < 16) {
-        ans = state[A] + F(state[B], state[C], state[D]) + input;
-    } else if (i < 32) {
-        ans = state[A] + G(state[B], state[C], state[D]) + input;
-    } else if (i < 48) {
-        ans = state[A] + H(state[B], state[C], state[D]) + input;
-    } else if (i < 64) {
-        ans = state[A] + I(state[B], state[C], state[D]) + input;
-    }
-
-    ans += k;
-    ans = ROTATE_LEFT(ans, rot);
-    ans += state[B];
-
-    return ans;
-}
-
 static void MD5_Algo(ft_md5_t *md5) {
     const uint32_t k[64] = K;
     const uint32_t r[64] = R;
     uint32_t tmp_state[4];
-    uint32_t combine_res = 0;
+    uint32_t ans;
     uint8_t g;
+
+    md5->state[A] = 0x67452301;
+    md5->state[B] = 0xEFCDAB89;
+    md5->state[C] = 0x98BADCFE;
+    md5->state[D] = 0x10325476;
 
     for (uint8_t i = 0; i < md5->input_len; i += 64) {
         tmp_state[A] = md5->state[A];
@@ -64,19 +49,26 @@ static void MD5_Algo(ft_md5_t *md5) {
         for (uint8_t j = 0; j < 64; ++j) {
             if (j < 16) {
                 g = j;
+                ans = tmp_state[A] + F(tmp_state[B], tmp_state[C], tmp_state[D]) + md5->input[(i / 4) + g];
             } else if (j < 32) {
                 g = ((j * 5 + 1) % 16);
+                ans = tmp_state[A] + G(tmp_state[B], tmp_state[C], tmp_state[D]) + md5->input[(i / 4) + g];
             } else if (j < 48) {
                 g = ((j * 3 + 5) % 16);
+                ans = tmp_state[A] + H(tmp_state[B], tmp_state[C], tmp_state[D]) + md5->input[(i / 4) + g];
             } else if (j < 64) {
                 g = ((j * 7) % 16);
+                ans = tmp_state[A] + I(tmp_state[B], tmp_state[C], tmp_state[D]) + md5->input[(i / 4) + g];
             }
 
-            combine_res = combine(tmp_state, md5->input[(i / 4) + g], j, k[j], r[j]);
+            ans += k[j];
+            ans = ROTATE_LEFT(ans, r[j]);
+            ans += tmp_state[B];
+
             tmp_state[A] = tmp_state[D];
             tmp_state[D] = tmp_state[C];
             tmp_state[C] = tmp_state[B];
-            tmp_state[B] = combine_res;
+            tmp_state[B] = ans;
         }
 
         md5->state[A] += tmp_state[A];
@@ -89,11 +81,6 @@ static void MD5_Algo(ft_md5_t *md5) {
 uint8_t *ft_md5(const uint8_t *input, const size_t input_len) {
     ft_md5_t    md5;
     uint8_t    *ans;
-
-    md5.state[A] = 0x67452301;
-    md5.state[B] = 0xEFCDAB89;
-    md5.state[C] = 0x98BADCFE;
-    md5.state[D] = 0x10325476;
 
     if (MD5_Padding(input, input_len, &md5) == false) {
         return NULL;
