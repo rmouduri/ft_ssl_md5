@@ -19,3 +19,9 @@ void print_malloc_error(const char *function) {
     write(STDERR_FILENO, function, strlen(function));
     write(STDERR_FILENO, "\n", 1);
 }
+
+void print_read_error(const char *function) {
+    write(STDERR_FILENO, "Read error in function: ", strlen("Read error in function: "));
+    write(STDERR_FILENO, function, strlen(function));
+    write(STDERR_FILENO, "\n", 1);
+}

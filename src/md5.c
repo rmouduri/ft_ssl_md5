@@ -6,7 +6,7 @@
 #include "ft_md5.h"
 
 
-static bool MD5_Padding(const uint8_t *input, const size_t input_len, ft_md5_t *md5) {
+static int MD5_Padding(const uint8_t *input, const size_t input_len, ft_md5_t *md5) {
     uint8_t *padded_input;
 
     md5->input_len = 64 + (64 * ((input_len / 64) + (input_len % 64 >= 56 ? 1 : 0)));
@@ -14,7 +14,7 @@ static bool MD5_Padding(const uint8_t *input, const size_t input_len, ft_md5_t *
 
     if (padded_input == NULL) {
         print_malloc_error("MD5_Padding");
-        return false;
+        return -1;
     }
 
     memcpy(padded_input, input, input_len);
@@ -25,14 +25,14 @@ static bool MD5_Padding(const uint8_t *input, const size_t input_len, ft_md5_t *
     memcpy(padded_input + (md5->input_len - 8), &input_len_to_display, sizeof(uint64_t));
 
     md5->input = (uint32_t *) padded_input;
-    return true;
+    return 0;
 }
 
 static void MD5_Algo(ft_md5_t *md5) {
     const uint32_t k[64] = K;
     const uint32_t r[64] = R;
     uint32_t tmp_state[4];
-    uint32_t ans;
+    uint32_t hash;
     uint8_t g;
 
     md5->state[A] = 0x67452301;
@@ -40,7 +40,7 @@ static void MD5_Algo(ft_md5_t *md5) {
     md5->state[C] = 0x98BADCFE;
     md5->state[D] = 0x10325476;
 
-    for (uint8_t i = 0; i < md5->input_len; i += 64) {
+    for (size_t i = 0; i < md5->input_len; i += 64) {
         tmp_state[A] = md5->state[A];
         tmp_state[B] = md5->state[B];
         tmp_state[C] = md5->state[C];
@@ -49,26 +49,26 @@ static void MD5_Algo(ft_md5_t *md5) {
         for (uint8_t j = 0; j < 64; ++j) {
             if (j < 16) {
                 g = j;
-                ans = tmp_state[A] + F(tmp_state[B], tmp_state[C], tmp_state[D]) + md5->input[(i / 4) + g];
+                hash = tmp_state[A] + F(tmp_state[B], tmp_state[C], tmp_state[D]) + md5->input[(i / 4) + g];
             } else if (j < 32) {
                 g = ((j * 5 + 1) % 16);
-                ans = tmp_state[A] + G(tmp_state[B], tmp_state[C], tmp_state[D]) + md5->input[(i / 4) + g];
+                hash = tmp_state[A] + G(tmp_state[B], tmp_state[C], tmp_state[D]) + md5->input[(i / 4) + g];
             } else if (j < 48) {
                 g = ((j * 3 + 5) % 16);
-                ans = tmp_state[A] + H(tmp_state[B], tmp_state[C], tmp_state[D]) + md5->input[(i / 4) + g];
+                hash = tmp_state[A] + H(tmp_state[B], tmp_state[C], tmp_state[D]) + md5->input[(i / 4) + g];
             } else if (j < 64) {
                 g = ((j * 7) % 16);
-                ans = tmp_state[A] + I(tmp_state[B], tmp_state[C], tmp_state[D]) + md5->input[(i / 4) + g];
+                hash = tmp_state[A] + I(tmp_state[B], tmp_state[C], tmp_state[D]) + md5->input[(i / 4) + g];
             }
 
-            ans += k[j];
-            ans = ROTATE_LEFT(ans, r[j]);
-            ans += tmp_state[B];
+            hash += k[j];
+            hash = ROTATE_LEFT(hash, r[j]);
+            hash += tmp_state[B];
 
             tmp_state[A] = tmp_state[D];
             tmp_state[D] = tmp_state[C];
             tmp_state[C] = tmp_state[B];
-            tmp_state[B] = ans;
+            tmp_state[B] = hash;
         }
 
         md5->state[A] += tmp_state[A];
@@ -80,9 +80,9 @@ static void MD5_Algo(ft_md5_t *md5) {
 
 uint8_t *ft_md5(const uint8_t *input, const size_t input_len) {
     ft_md5_t    md5;
-    uint8_t    *ans;
+    uint8_t    *hash;
 
-    if (MD5_Padding(input, input_len, &md5) == false) {
+    if (MD5_Padding(input, input_len, &md5) == -1) {
         return NULL;
     }
 
@@ -90,11 +90,11 @@ uint8_t *ft_md5(const uint8_t *input, const size_t input_len) {
 
     free(md5.input);
 
-    if ((ans = malloc(sizeof(uint8_t) * 16)) == NULL) {
+    if ((hash = malloc(sizeof(uint8_t) * 16)) == NULL) {
         print_malloc_error("ft_md5");
         return NULL;
     }
 
-    memcpy(ans, md5.state, sizeof(md5.state));
-    return ans;
+    memcpy(hash, md5.state, sizeof(md5.state));
+    return hash;
 }

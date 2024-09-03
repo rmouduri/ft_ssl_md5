@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <ctype.h>
 
-void hexdump(void *ptr, int size) {
-    unsigned char *buffer = (unsigned char *) ptr;
+void ft_hexdump(const void *ptr, int size) {
+    const unsigned char *buffer = (unsigned char *) ptr;
     int i, j;
 
     for (i = 0; i < size; i += 16) {
@@ -20,7 +20,7 @@ void hexdump(void *ptr, int size) {
 
         for (j = 0; j < 16; j++) {
             if (i + j < size) {
-                unsigned char ch = buffer[i + j];
+                const unsigned char ch = buffer[i + j];
                 if (isprint(ch)) {
                     printf("%c", ch);
                 } else {
@@ -33,8 +33,8 @@ void hexdump(void *ptr, int size) {
     }
 }
 
-void binarydump(void *ptr, int size) {
-    unsigned char *buffer = (unsigned char *) ptr;
+void ft_binarydump(const void *ptr, int size) {
+    const unsigned char *buffer = (unsigned char *) ptr;
     int i, j;
 
     for (i = 0; i < size; i += 8) {
@@ -42,7 +42,7 @@ void binarydump(void *ptr, int size) {
 
         for (j = 0; j < 8; j++) {
             if (i + j < size) {
-                unsigned char byte = buffer[i + j];
+                const unsigned char byte = buffer[i + j];
                 for (int bit = 7; bit >= 0; bit--) {
                     printf("%d", (byte >> bit) & 1);
                 }
@@ -56,7 +56,7 @@ void binarydump(void *ptr, int size) {
 
         for (j = 0; j < 8; j++) {
             if (i + j < size) {
-                unsigned char ch = buffer[i + j];
+                const unsigned char ch = buffer[i + j];
                 if (isprint(ch)) {
                     printf("%c", ch);
                 } else {

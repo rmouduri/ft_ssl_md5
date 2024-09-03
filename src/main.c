@@ -6,16 +6,24 @@
 
 int main(int argc, char **argv) {
     ssl_t   ssl = {
-        .command = 0,
+        .algo = -1,
         .options = 0,
         .ssl_inputs = NULL
     };
 
-    if (check_args(argc, argv, &ssl) == false) {
+    if (check_args(argc, argv, &ssl) == -1) {
         return 1;
     }
 
-    ft_md5((uint8_t *) argv[2], strlen(argv[2]));
+    ssl_input_t *tmp = ssl.ssl_inputs;
+    
+    #include "utils.h"
+    while (tmp) {
+        tmp->hash = ft_md5(tmp->ssl_str, tmp->len);
+        ft_hexdump(tmp->hash, 16);
+        tmp = tmp->next;
+    }
 
+    free_ssl_inputs(ssl.ssl_inputs);
     return 0;
 }

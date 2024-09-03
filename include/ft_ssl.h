@@ -6,11 +6,11 @@
 
 
 # define FT_SSL     "ft_ssl"
-# define P_OPTION_ARG   "-p"
-# define Q_OPTION_ARG   "-q"
-# define R_OPTION_ARG   "-r"
-# define S_OPTION_ARG   "-s"
-# define HELP_ARG       "-h"
+# define ECHO_STDIN_ARG     "-p"
+# define QUIET_MODE_ARG     "-q"
+# define REVERSE_MODE_ARG   "-r"
+# define STRING_ARG         "-s"
+# define HELP_ARG           "-h"
 # define MD5_COMMAND_ARG    "md5"
 # define SHA256_COMMAND_ARG "sha256"
 # define FT_SSL_HELP    "help\n"
@@ -30,10 +30,9 @@ typedef enum ssl_encrypt_algo_s {
 } ssl_encrypt_algo_t;
 
 typedef enum ssl_option_e {
-    P_OPTION = 1 << 0,
-    Q_OPTION = 1 << 1,
-    R_OPTION = 1 << 2,
-    S_OPTION = 1 << 3,
+    ECHO_STDIN_OPTION   = 1 << 0,
+    QUIET_MODE_OPTION   = 1 << 1,
+    REVERSE_MODE_OPTION = 1 << 2
 } ssl_option_t;
 
 typedef enum ssl_input_type_e {
@@ -43,26 +42,30 @@ typedef enum ssl_input_type_e {
 } ssl_input_type_t;
 
 typedef struct ssl_input_s {
-    char                *ssl_str;
+    uint8_t             *hash;
+    uint8_t             *ssl_str;
     const char          *ssl_arg;
+    uint64_t            len;
     ssl_input_type_t    type;
     ssl_encrypt_algo_t  encrypt_algo;
     struct ssl_input_s  *next;
 } ssl_input_t;
 
 typedef struct ssl_s {
-    ssl_encrypt_algo_t  command;
+    ssl_encrypt_algo_t  algo;
     ssl_option_t        options;
     ssl_input_t         *ssl_inputs;
 } ssl_t;
 
 
 /* option.c */
-bool check_args(int argc, char **argv, ssl_t *ssl);
+int check_args(int argc, char **argv, ssl_t *ssl);
+void free_ssl_inputs(ssl_input_t *ssl_inputs);
 
 /* error.c */
 void print_usage(void);
 void print_command_error(const char *command);
 void print_malloc_error(const char *function);
+void print_read_error(const char *function);
 
 #endif // _FT_SSL_
