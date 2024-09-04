@@ -73,4 +73,9 @@ void print_command_error(const char *command);
 void print_malloc_error(const char *function);
 void print_read_error(const char *function);
 
+/* algorithms */
+uint8_t *ft_md5(const uint8_t *input, const size_t input_len);
+uint8_t *ft_sha256(const uint8_t *input, const size_t input_len);
+
+
 #endif // _FT_SSL_

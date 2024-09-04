@@ -46,10 +46,8 @@ enum md5_state {
 typedef struct ft_md5_s {
     uint32_t    state[4];
     uint32_t    *input;
-    size_t      input_len;
+    uint64_t    input_len;
 } ft_md5_t;
 
-
-uint8_t *ft_md5(const uint8_t *input, const size_t input_len);
 
 #endif // _FT_MD5_

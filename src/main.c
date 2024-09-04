@@ -3,8 +3,6 @@
 
 #include "ft_ssl.h"
 #include "display.h"
-#include "ft_md5.h"
-#include "ft_sha256.h"
 
 int main(int argc, char **argv) {
     ssl_t   ssl = {
@@ -25,7 +23,10 @@ int main(int argc, char **argv) {
     ssl_input_t *tmp = ssl.ssl_inputs;
     while (tmp) {
         if (tmp->ssl_str || (!tmp->ssl_str && !tmp->len)) {
-            tmp->hash = hash_fun_ptr[ssl.algo](tmp->ssl_str, tmp->len);
+            if ((tmp->hash = hash_fun_ptr[ssl.algo](tmp->ssl_str, tmp->len)) == NULL) {
+                tmp = tmp->next;
+                continue;
+            }
         }
 
         display(tmp, ssl.algo, ssl.options);

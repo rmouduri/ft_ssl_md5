@@ -21,8 +21,8 @@ static int MD5_Padding(const uint8_t *input, const size_t input_len, ft_md5_t *m
     memset(padded_input + input_len, 0b10000000, 1);
     memset(padded_input + input_len + 1, 0, md5->input_len - (input_len + 1));
 
-    const uint64_t input_len_to_display = input_len * 8;
-    memcpy(padded_input + (md5->input_len - 8), &input_len_to_display, sizeof(uint64_t));
+    const uint64_t len_in_bits = input_len * 8;
+    memcpy(padded_input + (md5->input_len - 8), &len_in_bits, sizeof(uint64_t));
 
     md5->input = (uint32_t *) padded_input;
     return 0;
@@ -40,29 +40,28 @@ static void MD5_Algo(ft_md5_t *md5) {
     md5->state[C] = 0x98BADCFE;
     md5->state[D] = 0x10325476;
 
-    for (size_t i = 0; i < md5->input_len; i += 64) {
-        tmp_state[A] = md5->state[A];
-        tmp_state[B] = md5->state[B];
-        tmp_state[C] = md5->state[C];
-        tmp_state[D] = md5->state[D];
+    for (uint64_t chunk_index = 0; chunk_index < md5->input_len; chunk_index += 64) {
+        for (uint8_t state_index = A; state_index <= D; ++state_index) {
+            tmp_state[state_index] = md5->state[state_index];
+        }
 
-        for (uint8_t j = 0; j < 64; ++j) {
-            if (j < 16) {
-                g = j;
-                hash = tmp_state[A] + F(tmp_state[B], tmp_state[C], tmp_state[D]) + md5->input[(i / 4) + g];
-            } else if (j < 32) {
-                g = ((j * 5 + 1) % 16);
-                hash = tmp_state[A] + G(tmp_state[B], tmp_state[C], tmp_state[D]) + md5->input[(i / 4) + g];
-            } else if (j < 48) {
-                g = ((j * 3 + 5) % 16);
-                hash = tmp_state[A] + H(tmp_state[B], tmp_state[C], tmp_state[D]) + md5->input[(i / 4) + g];
-            } else if (j < 64) {
-                g = ((j * 7) % 16);
-                hash = tmp_state[A] + I(tmp_state[B], tmp_state[C], tmp_state[D]) + md5->input[(i / 4) + g];
+        for (uint8_t i = 0; i < 64; ++i) {
+            if (i < 16) {
+                g = i;
+                hash = tmp_state[A] + F(tmp_state[B], tmp_state[C], tmp_state[D]) + md5->input[(chunk_index / 4) + g];
+            } else if (i < 32) {
+                g = ((i * 5 + 1) % 16);
+                hash = tmp_state[A] + G(tmp_state[B], tmp_state[C], tmp_state[D]) + md5->input[(chunk_index / 4) + g];
+            } else if (i < 48) {
+                g = ((i * 3 + 5) % 16);
+                hash = tmp_state[A] + H(tmp_state[B], tmp_state[C], tmp_state[D]) + md5->input[(chunk_index / 4) + g];
+            } else if (i < 64) {
+                g = ((i * 7) % 16);
+                hash = tmp_state[A] + I(tmp_state[B], tmp_state[C], tmp_state[D]) + md5->input[(chunk_index / 4) + g];
             }
 
-            hash += k[j];
-            hash = ROTATE_LEFT(hash, r[j]);
+            hash += k[i];
+            hash = ROTATE_LEFT(hash, r[i]);
             hash += tmp_state[B];
 
             tmp_state[A] = tmp_state[D];
@@ -71,10 +70,9 @@ static void MD5_Algo(ft_md5_t *md5) {
             tmp_state[B] = hash;
         }
 
-        md5->state[A] += tmp_state[A];
-        md5->state[B] += tmp_state[B];
-        md5->state[C] += tmp_state[C];
-        md5->state[D] += tmp_state[D];
+        for (uint8_t state_index = A; state_index <= D; ++state_index) {
+            md5->state[state_index] += tmp_state[state_index];
+        }
     }
 }
 
