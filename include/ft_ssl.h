@@ -24,6 +24,11 @@
                         "-p -q -r -s\n"
 
 
+# define ALGO_STRING { \
+    "MD5", \
+    "SHA256" \
+}
+
 typedef enum ssl_encrypt_algo_s {
     MD5,
     SHA256

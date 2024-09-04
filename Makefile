@@ -11,8 +11,9 @@ OBJS_DIR =	.objs
 SRCS_FILE =	main.c \
 			option.c	\
 			error.c	\
-			utils.c	\
-			md5.c
+			display.c	\
+			md5.c	\
+			sha256.c
 
 OBJ_FILE =	$(SRCS_FILE:.c=.o)
 

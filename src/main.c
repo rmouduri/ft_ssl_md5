@@ -2,7 +2,9 @@
 #include <string.h>
 
 #include "ft_ssl.h"
+#include "display.h"
 #include "ft_md5.h"
+#include "ft_sha256.h"
 
 int main(int argc, char **argv) {
     ssl_t   ssl = {
@@ -15,12 +17,18 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    uint8_t *(*hash_fun_ptr[2])(const uint8_t *, const size_t) = {
+        &ft_md5,
+        &ft_sha256
+    };
+
     ssl_input_t *tmp = ssl.ssl_inputs;
-    
-    #include "utils.h"
     while (tmp) {
-        tmp->hash = ft_md5(tmp->ssl_str, tmp->len);
-        ft_hexdump(tmp->hash, 16);
+        if (tmp->ssl_str || (!tmp->ssl_str && !tmp->len)) {
+            tmp->hash = hash_fun_ptr[ssl.algo](tmp->ssl_str, tmp->len);
+        }
+
+        display(tmp, ssl.algo, ssl.options);
         tmp = tmp->next;
     }
 
