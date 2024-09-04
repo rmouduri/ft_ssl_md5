@@ -17,12 +17,12 @@ static int MD5_Padding(const uint8_t *input, const size_t input_len, ft_md5_t *m
         return -1;
     }
 
-    memcpy(padded_input, input, input_len);
-    memset(padded_input + input_len, 0b10000000, 1);
-    memset(padded_input + input_len + 1, 0, md5->input_len - (input_len + 1));
+    ft_memcpy(padded_input, input, input_len);
+    ft_memset(padded_input + input_len, 0b10000000, 1);
+    ft_memset(padded_input + input_len + 1, 0, md5->input_len - (input_len + 1));
 
     const uint64_t len_in_bits = input_len * 8;
-    memcpy(padded_input + (md5->input_len - 8), &len_in_bits, sizeof(uint64_t));
+    ft_memcpy(padded_input + (md5->input_len - 8), &len_in_bits, sizeof(uint64_t));
 
     md5->input = (uint32_t *) padded_input;
     return 0;
@@ -93,6 +93,6 @@ uint8_t *ft_md5(const uint8_t *input, const size_t input_len) {
         return NULL;
     }
 
-    memcpy(hash, md5.state, sizeof(md5.state));
+    ft_memcpy(hash, md5.state, sizeof(md5.state));
     return hash;
 }

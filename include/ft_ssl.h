@@ -4,6 +4,7 @@
 #ifndef _FT_SSL_
 # define _FT_SSL_
 
+# include "ft_printf.h"
 
 # define FT_SSL     "ft_ssl"
 # define ECHO_STDIN_ARG     "-p"
@@ -72,6 +73,11 @@ void print_usage(void);
 void print_command_error(const char *command);
 void print_malloc_error(const char *function);
 void print_read_error(const char *function);
+
+/* utils.c */
+void    *ft_memcpy(void *dest, const void *src, size_t n);
+void    *ft_memset(void *s, int c, size_t n);
+int     ft_strcmp(const char *s1, const char *s2);
 
 /* algorithms */
 uint8_t *ft_md5(const uint8_t *input, const size_t input_len);

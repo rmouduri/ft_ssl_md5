@@ -17,9 +17,9 @@ static int SHA256_Padding(const uint8_t *input, const size_t input_len, ft_sha25
         return -1;
     }
 
-    memcpy(padded_input, input, input_len);
-    memset(padded_input + input_len, 0b10000000, 1);
-    memset(padded_input + input_len + 1, 0, sha256->input_len - (input_len + 1));
+    ft_memcpy(padded_input, input, input_len);
+    ft_memset(padded_input + input_len, 0b10000000, 1);
+    ft_memset(padded_input + input_len + 1, 0, sha256->input_len - (input_len + 1));
 
     uint64_t len_in_bits = input_len * 8;
     uint8_t *p = padded_input + (sha256->input_len - 8);

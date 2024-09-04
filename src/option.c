@@ -5,7 +5,6 @@
 
 #include "ft_ssl.h"
 
-
 void free_ssl_inputs(ssl_input_t *ssl_inputs) {
     ssl_input_t *tmp;
 
@@ -38,7 +37,7 @@ static int8_t read_fd(int fd, uint8_t **dest, uint64_t *len) {
             return -1;
         }
 
-        memcpy(tmp, *dest, *len);
+        ft_memcpy(tmp, *dest, *len);
 
         if (*dest) { free(*dest); }
         if ((*dest = malloc(sizeof(uint8_t) * (*len + r))) == NULL) {
@@ -46,8 +45,8 @@ static int8_t read_fd(int fd, uint8_t **dest, uint64_t *len) {
             return -1;
         }
 
-        memcpy(*dest, tmp, *len);
-        memcpy(*dest + *len, buffer, r);
+        ft_memcpy(*dest, tmp, *len);
+        ft_memcpy(*dest + *len, buffer, r);
 
         if (tmp) { free(tmp); }
         tmp = NULL;
@@ -85,7 +84,7 @@ static int add_entry(ssl_t *ssl, const char *input, ssl_input_type_t type) {
 
     if (type == ARG_INPUT) {
         new_entry->ssl_str = (uint8_t *) input;
-        new_entry->len = strlen((char *) new_entry->ssl_str);
+        new_entry->len = ft_strlen((char *) new_entry->ssl_str);
     } else if (type == FILE_INPUT) {
         int fd;
         new_entry->len = 1;
@@ -116,15 +115,15 @@ static int add_entry(ssl_t *ssl, const char *input, ssl_input_type_t type) {
 }
 
 static void print_help(void) {
-    write(STDOUT_FILENO, FT_SSL_HELP, strlen(FT_SSL_HELP));
+    write(STDOUT_FILENO, FT_SSL_HELP, ft_strlen(FT_SSL_HELP));
 }
 
 static int check_command(const char *command, ssl_t *ssl) {
-    if (strcmp(MD5_COMMAND_ARG, command) == 0) {
+    if (ft_strcmp(MD5_COMMAND_ARG, command) == 0) {
         ssl->algo = MD5;
-    } else if (strcmp(SHA256_COMMAND_ARG, command) == 0) {
+    } else if (ft_strcmp(SHA256_COMMAND_ARG, command) == 0) {
         ssl->algo = SHA256;
-    } else if (strcmp(HELP_ARG, command) == 0) {
+    } else if (ft_strcmp(HELP_ARG, command) == 0) {
         print_help();
         return -1;
     } else {
@@ -139,22 +138,22 @@ int check_options(int argc, char **argv, ssl_t *ssl) {
     int i = 2;
 
     while (i < argc) {
-        if (strcmp(HELP_ARG, argv[i]) == 0) {
+        if (ft_strcmp(HELP_ARG, argv[i]) == 0) {
             print_help();
             free_ssl_inputs(ssl->ssl_inputs);
             return -1;
-        } else if (strcmp(ECHO_STDIN_ARG, argv[i]) == 0
+        } else if (ft_strcmp(ECHO_STDIN_ARG, argv[i]) == 0
                 && !(ssl->options & ECHO_STDIN_OPTION)) {
             ssl->options |= ECHO_STDIN_OPTION;
             if (add_entry(ssl, NULL, STDIN_INPUT) == -1) {
                 free_ssl_inputs(ssl->ssl_inputs);
                 return -1;
             }
-        } else if (strcmp(QUIET_MODE_ARG, argv[i]) == 0) {
+        } else if (ft_strcmp(QUIET_MODE_ARG, argv[i]) == 0) {
             ssl->options |= QUIET_MODE_OPTION;
-        } else if (strcmp(REVERSE_MODE_ARG, argv[i]) == 0) {
+        } else if (ft_strcmp(REVERSE_MODE_ARG, argv[i]) == 0) {
             ssl->options |= REVERSE_MODE_OPTION;
-        } else if (strcmp(STRING_ARG, argv[i]) == 0) {
+        } else if (ft_strcmp(STRING_ARG, argv[i]) == 0) {
             if (i + 1 >= argc) break;
             if (add_entry(ssl, argv[++i], ARG_INPUT) == -1) {
                 free_ssl_inputs(ssl->ssl_inputs);
